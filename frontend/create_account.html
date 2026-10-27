@@ -1,10 +1,1081 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <title>Criar Conta</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Cadastro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              pink: {
+                400: "#f472b6",
+                500: "#ec4899",
+                600: "#db2777",
+              },
+              green: {
+                400: "#4ade80",
+                500: "#22c55e",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .age-scroll {
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+      .age-scroll::-webkit-scrollbar {
+        display: none;
+      }
+      .age-item {
+        scroll-snap-align: center;
+      }
+      .age-wrapper {
+        mask-image: linear-gradient(
+          to right,
+          transparent,
+          black 12%,
+          black 88%,
+          transparent
+        );
+        -webkit-mask-image: linear-gradient(
+          to right,
+          transparent,
+          black 12%,
+          black 88%,
+          transparent
+        );
+      }
+    </style>
   </head>
-  <body></body>
+  <body
+    class="bg-zinc-950 text-white min-h-screen flex items-center justify-center p-4 font-sans antialiased"
+  >
+    <main
+      class="w-full max-w-md bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl border border-zinc-800 flex flex-col min-h-[640px]"
+    >
+      <!-- Header com progresso -->
+      <div class="px-6 pt-6 pb-2">
+        <div class="flex items-center justify-between mb-5">
+          <div class="flex gap-1.5">
+            <div
+              id="dot-1"
+              class="w-2 h-2 rounded-full bg-pink-500 transition-all"
+            ></div>
+            <div
+              id="dot-2"
+              class="w-2 h-2 rounded-full bg-zinc-700 transition-all"
+            ></div>
+            <div
+              id="dot-3"
+              class="w-2 h-2 rounded-full bg-zinc-700 transition-all"
+            ></div>
+            <div
+              id="dot-4"
+              class="w-2 h-2 rounded-full bg-zinc-700 transition-all"
+            ></div>
+            <div
+              id="dot-5"
+              class="w-2 h-2 rounded-full bg-zinc-700 transition-all"
+            ></div>
+            <div
+              id="dot-6"
+              class="w-2 h-2 rounded-full bg-zinc-700 transition-all"
+            ></div>
+          </div>
+          <span id="step-text" class="text-xs text-zinc-400 font-medium"
+            >1 de 6</span
+          >
+        </div>
+      </div>
+
+      <form
+        id="signup-form"
+        class="flex-1 flex flex-col px-6 pb-6"
+        onsubmit="return false;"
+      >
+        <!-- PASSO 1: Nome -->
+        <section id="passo1" class="flex-1 flex flex-col">
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold tracking-tight mb-1">
+              Qual é o seu nome?
+            </h1>
+            <p class="text-zinc-400 text-sm mb-8">Vamos começar pelo básico</p>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-1.5"
+                  >Nome</label
+                >
+                <input
+                  type="text"
+                  id="nome"
+                  placeholder="Como as pessoas te chamam"
+                  class="w-full bg-zinc-800/80 border border-zinc-700 rounded-2xl px-4 py-3.5 text-base text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/30 transition"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-1.5"
+                  >Sobrenome</label
+                >
+                <input
+                  type="text"
+                  id="sobrenome"
+                  placeholder="Seu sobrenome"
+                  class="w-full bg-zinc-800/80 border border-zinc-700 rounded-2xl px-4 py-3.5 text-base text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/30 transition"
+                />
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onclick="nextStep(2)"
+            class="mt-8 w-full bg-pink-500 hover:bg-pink-400 active:scale-[0.98] text-white font-semibold py-3.5 rounded-2xl text-base transition shadow-lg shadow-pink-500/25"
+          >
+            Continuar
+          </button>
+        </section>
+
+        <!-- PASSO 2: Idade, Sexualidade, Estado -->
+        <section id="passo2" class="flex-1 flex flex-col hidden">
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold tracking-tight mb-1">
+              Quantos anos você tem?
+            </h1>
+            <p class="text-zinc-400 text-sm mb-6">
+              Deslize para escolher sua idade
+            </p>
+
+            <div class="text-center mb-4">
+              <span id="idade-display" class="text-5xl font-bold text-pink-400"
+                >20</span
+              >
+              <span class="text-xl text-zinc-400 ml-1">anos</span>
+            </div>
+
+            <div class="age-wrapper relative mb-8">
+              <div
+                id="age-scroll"
+                class="age-scroll flex gap-3 overflow-x-auto py-4 px-[42%]"
+              ></div>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-1.5"
+                  >Orientação sexual</label
+                >
+                <div class="relative">
+                  <select
+                    id="sexualidade"
+                    class="w-full bg-zinc-800/80 border border-zinc-700 rounded-2xl px-4 py-3.5 text-base text-white appearance-none focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/30 transition"
+                  >
+                    <option value="" disabled selected>Selecione</option>
+                    <option value="hetero">Heterossexual</option>
+                    <option value="gay">Gay</option>
+                    <option value="lesbica">Lésbica</option>
+                    <option value="bissexual">Bissexual</option>
+                    <option value="pansexual">Pansexual</option>
+                    <option value="assexual">Assexual</option>
+                    <option value="outro">Outro</option>
+                  </select>
+                  <div
+                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-zinc-400"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-1.5"
+                  >Estado</label
+                >
+                <div class="relative">
+                  <select
+                    id="estado"
+                    class="w-full bg-zinc-800/80 border border-zinc-700 rounded-2xl px-4 py-3.5 text-base text-white appearance-none focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/30 transition"
+                  >
+                    <option value="" disabled selected>
+                      Selecione seu estado
+                    </option>
+                    <option value="AC">Acre</option>
+                    <option value="AL">Alagoas</option>
+                    <option value="AP">Amapá</option>
+                    <option value="AM">Amazonas</option>
+                    <option value="BA">Bahia</option>
+                    <option value="CE">Ceará</option>
+                    <option value="DF">Distrito Federal</option>
+                    <option value="ES">Espírito Santo</option>
+                    <option value="GO">Goiás</option>
+                    <option value="MA">Maranhão</option>
+                    <option value="MT">Mato Grosso</option>
+                    <option value="MS">Mato Grosso do Sul</option>
+                    <option value="MG">Minas Gerais</option>
+                    <option value="PA">Pará</option>
+                    <option value="PB">Paraíba</option>
+                    <option value="PR">Paraná</option>
+                    <option value="PE">Pernambuco</option>
+                    <option value="PI">Piauí</option>
+                    <option value="RJ">Rio de Janeiro</option>
+                    <option value="RN">Rio Grande do Norte</option>
+                    <option value="RS">Rio Grande do Sul</option>
+                    <option value="RO">Rondônia</option>
+                    <option value="RR">Roraima</option>
+                    <option value="SC">Santa Catarina</option>
+                    <option value="SP">São Paulo</option>
+                    <option value="SE">Sergipe</option>
+                    <option value="TO">Tocantins</option>
+                  </select>
+                  <div
+                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-zinc-400"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 flex gap-3">
+            <button
+              type="button"
+              onclick="prevStep(1)"
+              class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-3.5 rounded-2xl transition"
+            >
+              Voltar
+            </button>
+            <button
+              type="button"
+              onclick="nextStep(3)"
+              class="flex-[1.6] bg-pink-500 hover:bg-pink-400 active:scale-[0.98] text-white font-semibold py-3.5 rounded-2xl transition shadow-lg shadow-pink-500/25"
+            >
+              Continuar
+            </button>
+          </div>
+        </section>
+
+        <!-- PASSO 3: Bio -->
+        <section id="passo3" class="flex-1 flex flex-col hidden">
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold tracking-tight mb-1">
+              Escreva sua bio
+            </h1>
+            <p class="text-zinc-400 text-sm mb-6">
+              Mostre um pouco da sua personalidade
+            </p>
+
+            <div class="relative">
+              <textarea
+                id="bio"
+                maxlength="300"
+                rows="6"
+                placeholder="Ex: Amante de café, séries e aventuras de fim de semana..."
+                class="w-full bg-zinc-800/80 border border-zinc-700 rounded-2xl p-4 text-base text-white placeholder-zinc-500 resize-none focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/30 transition"
+              ></textarea>
+              <div class="absolute bottom-3 right-4 text-xs text-zinc-500">
+                <span id="char-counter">300</span>/300
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 flex gap-3">
+            <button
+              type="button"
+              onclick="prevStep(2)"
+              class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-3.5 rounded-2xl transition"
+            >
+              Voltar
+            </button>
+            <button
+              type="button"
+              onclick="nextStep(4)"
+              class="flex-[1.6] bg-pink-500 hover:bg-pink-400 active:scale-[0.98] text-white font-semibold py-3.5 rounded-2xl transition shadow-lg shadow-pink-500/25"
+            >
+              Continuar
+            </button>
+          </div>
+        </section>
+
+        <!-- PASSO 4: Fotos e Preferências -->
+        <section id="passo4" class="flex-1 flex flex-col hidden">
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold tracking-tight mb-1">
+              Fotos e preferências
+            </h1>
+            <p class="text-zinc-400 text-sm mb-5">
+              Adicione até 5 fotos (a primeira será a principal)
+            </p>
+
+            <div class="grid grid-cols-3 gap-2.5 mb-6">
+              <!-- Foto 1 (principal) -->
+              <div class="relative aspect-[3/4] col-span-1 row-span-2">
+                <label
+                  class="absolute inset-0 bg-zinc-800 border-2 border-dashed border-zinc-600 hover:border-pink-500 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition overflow-hidden group"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    onchange="handleImage(this, 1)"
+                  />
+                  <div
+                    id="placeholder-1"
+                    class="flex flex-col items-center text-zinc-500 group-hover:text-pink-400 transition px-2 text-center"
+                  >
+                    <svg
+                      class="w-7 h-7 mb-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    <span class="text-[11px] font-medium leading-tight"
+                      >Foto principal</span
+                    >
+                  </div>
+                  <img
+                    id="preview-1"
+                    class="absolute inset-0 w-full h-full object-cover hidden"
+                    alt="Preview"
+                  />
+                </label>
+                <button
+                  type="button"
+                  id="remove-1"
+                  onclick="removeImage(1)"
+                  class="absolute top-1.5 right-1.5 bg-black/70 text-white rounded-full p-1 hidden z-10"
+                >
+                  <svg
+                    class="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Fotos 2-5 -->
+              <div class="relative aspect-square" id="slot-2">
+                <label
+                  class="absolute inset-0 bg-zinc-800 border-2 border-dashed border-zinc-600 hover:border-pink-500 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition overflow-hidden group"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    onchange="handleImage(this, 2)"
+                  />
+                  <div
+                    id="placeholder-2"
+                    class="flex flex-col items-center text-zinc-500 group-hover:text-pink-400 transition"
+                  >
+                    <svg
+                      class="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                  </div>
+                  <img
+                    id="preview-2"
+                    class="absolute inset-0 w-full h-full object-cover hidden"
+                    alt="Preview"
+                  />
+                </label>
+                <button
+                  type="button"
+                  id="remove-2"
+                  onclick="removeImage(2)"
+                  class="absolute top-1 right-1 bg-black/70 text-white rounded-full p-1 hidden z-10"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="relative aspect-square">
+                <label
+                  class="absolute inset-0 bg-zinc-800 border-2 border-dashed border-zinc-600 hover:border-pink-500 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition overflow-hidden group"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    onchange="handleImage(this, 3)"
+                  />
+                  <div
+                    id="placeholder-3"
+                    class="flex flex-col items-center text-zinc-500 group-hover:text-pink-400 transition"
+                  >
+                    <svg
+                      class="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                  </div>
+                  <img
+                    id="preview-3"
+                    class="absolute inset-0 w-full h-full object-cover hidden"
+                    alt="Preview"
+                  />
+                </label>
+                <button
+                  type="button"
+                  id="remove-3"
+                  onclick="removeImage(3)"
+                  class="absolute top-1 right-1 bg-black/70 text-white rounded-full p-1 hidden z-10"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="relative aspect-square">
+                <label
+                  class="absolute inset-0 bg-zinc-800 border-2 border-dashed border-zinc-600 hover:border-pink-500 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition overflow-hidden group"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    onchange="handleImage(this, 4)"
+                  />
+                  <div
+                    id="placeholder-4"
+                    class="flex flex-col items-center text-zinc-500 group-hover:text-pink-400 transition"
+                  >
+                    <svg
+                      class="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                  </div>
+                  <img
+                    id="preview-4"
+                    class="absolute inset-0 w-full h-full object-cover hidden"
+                    alt="Preview"
+                  />
+                </label>
+                <button
+                  type="button"
+                  id="remove-4"
+                  onclick="removeImage(4)"
+                  class="absolute top-1 right-1 bg-black/70 text-white rounded-full p-1 hidden z-10"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="relative aspect-square">
+                <label
+                  class="absolute inset-0 bg-zinc-800 border-2 border-dashed border-zinc-600 hover:border-pink-500 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition overflow-hidden group"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    onchange="handleImage(this, 5)"
+                  />
+                  <div
+                    id="placeholder-5"
+                    class="flex flex-col items-center text-zinc-500 group-hover:text-pink-400 transition"
+                  >
+                    <svg
+                      class="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                  </div>
+                  <img
+                    id="preview-5"
+                    class="absolute inset-0 w-full h-full object-cover hidden"
+                    alt="Preview"
+                  />
+                </label>
+                <button
+                  type="button"
+                  id="remove-5"
+                  onclick="removeImage(5)"
+                  class="absolute top-1 right-1 bg-black/70 text-white rounded-full p-1 hidden z-10"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-zinc-300 mb-1.5"
+                >Quem você quer ver?</label
+              >
+              <div class="relative">
+                <select
+                  id="preferencia"
+                  class="w-full bg-zinc-800/80 border border-zinc-700 rounded-2xl px-4 py-3.5 text-base text-white appearance-none focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/30 transition"
+                >
+                  <option value="todos">Todos</option>
+                  <option value="homens">Homens</option>
+                  <option value="mulheres">Mulheres</option>
+                  <option value="nao-binarios">Pessoas Não-Binárias</option>
+                </select>
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-zinc-400"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 flex gap-3">
+            <button
+              type="button"
+              onclick="prevStep(3)"
+              class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-3.5 rounded-2xl transition"
+            >
+              Voltar
+            </button>
+            <button
+              type="button"
+              onclick="nextStep(5)"
+              class="flex-[1.6] bg-pink-500 hover:bg-pink-400 active:scale-[0.98] text-white font-semibold py-3.5 rounded-2xl transition shadow-lg shadow-pink-500/25"
+            >
+              Continuar
+            </button>
+          </div>
+        </section>
+
+        <!-- PASSO 5: Email e Senha -->
+        <section id="passo5" class="flex-1 flex flex-col hidden">
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold tracking-tight mb-1">
+              Crie sua conta
+            </h1>
+            <p class="text-zinc-400 text-sm mb-8">
+              Você vai usar esses dados para entrar depois
+            </p>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-1.5"
+                  >E-mail</label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="seu@email.com"
+                  autocomplete="email"
+                  class="w-full bg-zinc-800/80 border border-zinc-700 rounded-2xl px-4 py-3.5 text-base text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/30 transition"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-1.5"
+                  >Senha</label
+                >
+                <input
+                  type="password"
+                  id="senha"
+                  placeholder="Mínimo 6 caracteres"
+                  autocomplete="new-password"
+                  class="w-full bg-zinc-800/80 border border-zinc-700 rounded-2xl px-4 py-3.5 text-base text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/30 transition"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-1.5"
+                  >Confirmar senha</label
+                >
+                <input
+                  type="password"
+                  id="confirmar-senha"
+                  placeholder="Digite a senha novamente"
+                  autocomplete="new-password"
+                  class="w-full bg-zinc-800/80 border border-zinc-700 rounded-2xl px-4 py-3.5 text-base text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/30 transition"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 flex gap-3">
+            <button
+              type="button"
+              onclick="prevStep(4)"
+              class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-3.5 rounded-2xl transition"
+            >
+              Voltar
+            </button>
+            <button
+              type="button"
+              onclick="nextStep(6)"
+              class="flex-[1.6] bg-pink-500 hover:bg-pink-400 active:scale-[0.98] text-white font-semibold py-3.5 rounded-2xl transition shadow-lg shadow-pink-500/25"
+            >
+              Continuar
+            </button>
+          </div>
+        </section>
+
+        <!-- PASSO 6: Tela final / Boas-vindas -->
+        <section id="passo6" class="flex-1 flex flex-col hidden">
+          <div
+            class="flex-1 flex flex-col items-center justify-center text-center px-2"
+          >
+            <div
+              class="w-20 h-20 rounded-full bg-gradient-to-br from-pink-500 to-green-500 flex items-center justify-center mb-6 shadow-lg shadow-pink-500/30"
+            >
+              <svg
+                class="w-10 h-10 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+
+            <h1 class="text-3xl font-bold tracking-tight mb-3">Tudo pronto!</h1>
+            <p class="text-zinc-400 text-base mb-8 leading-relaxed">
+              Seu perfil foi criado com sucesso.<br />
+              Agora é só começar a conhecer pessoas.
+            </p>
+
+            <div class="w-full space-y-4 text-left mb-2">
+              <div
+                class="flex items-start gap-3 bg-zinc-800/60 rounded-2xl p-4"
+              >
+                <div
+                  class="w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0 mt-0.5"
+                >
+                  <span class="text-pink-400 text-sm">1</span>
+                </div>
+                <div>
+                  <p class="font-medium text-white text-sm">Descubra pessoas</p>
+                  <p class="text-zinc-400 text-xs mt-0.5">
+                    Veja perfis próximos de você
+                  </p>
+                </div>
+              </div>
+
+              <div
+                class="flex items-start gap-3 bg-zinc-800/60 rounded-2xl p-4"
+              >
+                <div
+                  class="w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0 mt-0.5"
+                >
+                  <span class="text-pink-400 text-sm">2</span>
+                </div>
+                <div>
+                  <p class="font-medium text-white text-sm">Dê match</p>
+                  <p class="text-zinc-400 text-xs mt-0.5">
+                    Curta quem você gostou
+                  </p>
+                </div>
+              </div>
+
+              <div
+                class="flex items-start gap-3 bg-zinc-800/60 rounded-2xl p-4"
+              >
+                <div
+                  class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-0.5"
+                >
+                  <span class="text-green-400 text-sm">3</span>
+                </div>
+                <div>
+                  <p class="font-medium text-white text-sm">Converse</p>
+                  <p class="text-zinc-400 text-xs mt-0.5">
+                    Quando os dois curtem, o chat abre
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onclick="finalizarCadastro()"
+            class="mt-6 w-full bg-gradient-to-r from-pink-500 to-green-500 hover:from-pink-400 hover:to-green-400 active:scale-[0.98] text-white font-semibold py-4 rounded-2xl text-base transition shadow-lg shadow-pink-500/25"
+          >
+            Começar
+          </button>
+        </section>
+      </form>
+    </main>
+
+    <script>
+      let currentStep = 1;
+      let selectedAge = 20;
+      const totalSteps = 6;
+
+      // ========== SELETOR DE IDADE ==========
+      const ageScroll = document.getElementById("age-scroll");
+
+      function createAgeItems() {
+        ageScroll.innerHTML = "";
+        for (let i = 18; i <= 99; i++) {
+          const item = document.createElement("button");
+          item.type = "button";
+          item.textContent = i;
+          item.dataset.age = i;
+          item.className = `age-item flex-none w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-medium transition-all duration-200 ${
+            i === selectedAge
+              ? "bg-pink-500 text-white scale-110 shadow-lg shadow-pink-500/40"
+              : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+          }`;
+          item.onclick = () => selectAge(i, true);
+          ageScroll.appendChild(item);
+        }
+        setTimeout(() => centerAge(selectedAge), 50);
+      }
+
+      function selectAge(age, shouldScroll = false) {
+        selectedAge = age;
+        document.getElementById("idade-display").textContent = age;
+
+        document.querySelectorAll(".age-item").forEach((btn) => {
+          const val = parseInt(btn.dataset.age);
+          btn.className =
+            val === age
+              ? "age-item flex-none w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-medium transition-all duration-200 bg-pink-500 text-white scale-110 shadow-lg shadow-pink-500/40"
+              : "age-item flex-none w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-medium transition-all duration-200 bg-zinc-800 text-zinc-400 hover:bg-zinc-700";
+        });
+
+        if (shouldScroll) centerAge(age);
+      }
+
+      function centerAge(age) {
+        const item = ageScroll.querySelector(`[data-age="${age}"]`);
+        if (item) {
+          item.scrollIntoView({
+            behavior: "smooth",
+            inline: "center",
+            block: "nearest",
+          });
+        }
+      }
+
+      ageScroll.addEventListener("scroll", () => {
+        clearTimeout(ageScroll.scrollTimeout);
+        ageScroll.scrollTimeout = setTimeout(() => {
+          const containerCenter =
+            ageScroll.scrollLeft + ageScroll.offsetWidth / 2;
+          let closest = null;
+          let minDist = Infinity;
+
+          document.querySelectorAll(".age-item").forEach((item) => {
+            const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+            const dist = Math.abs(containerCenter - itemCenter);
+            if (dist < minDist) {
+              minDist = dist;
+              closest = item;
+            }
+          });
+
+          if (closest) {
+            const age = parseInt(closest.dataset.age);
+            if (age !== selectedAge) selectAge(age, false);
+          }
+        }, 80);
+      });
+
+      // ========== NAVEGAÇÃO ==========
+      function updateProgress() {
+        for (let i = 1; i <= totalSteps; i++) {
+          const dot = document.getElementById(`dot-${i}`);
+          if (!dot) continue;
+          dot.className =
+            i <= currentStep
+              ? "w-2 h-2 rounded-full bg-pink-500 transition-all"
+              : "w-2 h-2 rounded-full bg-zinc-700 transition-all";
+        }
+        document.getElementById("step-text").textContent =
+          `${currentStep} de ${totalSteps}`;
+      }
+
+      function showStep(step) {
+        document
+          .querySelectorAll('section[id^="passo"]')
+          .forEach((el) => el.classList.add("hidden"));
+        document.getElementById(`passo${step}`).classList.remove("hidden");
+        currentStep = step;
+        updateProgress();
+
+        if (step === 2) {
+          setTimeout(() => centerAge(selectedAge), 50);
+        }
+      }
+
+      function nextStep(step) {
+        if (!validateStep()) return;
+        showStep(step);
+      }
+
+      function prevStep(step) {
+        showStep(step);
+      }
+
+      function validateStep() {
+        if (currentStep === 1) {
+          const nome = document.getElementById("nome").value.trim();
+          const sobrenome = document.getElementById("sobrenome").value.trim();
+          if (!nome || !sobrenome) {
+            alert("Preencha nome e sobrenome");
+            return false;
+          }
+        }
+
+        if (currentStep === 2) {
+          if (!document.getElementById("sexualidade").value) {
+            alert("Selecione sua orientação");
+            return false;
+          }
+          if (!document.getElementById("estado").value) {
+            alert("Selecione seu estado");
+            return false;
+          }
+        }
+
+        if (currentStep === 4) {
+          let fotosCount = 0;
+          for (let i = 1; i <= 5; i++) {
+            if (
+              !document
+                .getElementById(`preview-${i}`)
+                .classList.contains("hidden")
+            ) {
+              fotosCount++;
+            }
+          }
+          if (fotosCount === 0) {
+            alert("Adicione pelo menos uma foto");
+            return false;
+          }
+        }
+
+        if (currentStep === 5) {
+          const email = document.getElementById("email").value.trim();
+          const senha = document.getElementById("senha").value;
+          const confirmar = document.getElementById("confirmar-senha").value;
+
+          if (!email || !email.includes("@")) {
+            alert("Digite um e-mail válido");
+            return false;
+          }
+          if (senha.length < 6) {
+            alert("A senha precisa ter no mínimo 6 caracteres");
+            return false;
+          }
+          if (senha !== confirmar) {
+            alert("As senhas não coincidem");
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      // ========== BIO ==========
+      document.getElementById("bio").addEventListener("input", function () {
+        document.getElementById("char-counter").textContent =
+          300 - this.value.length;
+      });
+
+      // ========== FOTOS ==========
+      function handleImage(input, index) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const preview = document.getElementById(`preview-${index}`);
+          const placeholder = document.getElementById(`placeholder-${index}`);
+          const removeBtn = document.getElementById(`remove-${index}`);
+
+          preview.src = e.target.result;
+          preview.classList.remove("hidden");
+          placeholder.classList.add("hidden");
+          removeBtn.classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function removeImage(index) {
+        const preview = document.getElementById(`preview-${index}`);
+        const placeholder = document.getElementById(`placeholder-${index}`);
+        const removeBtn = document.getElementById(`remove-${index}`);
+        const input = preview.closest("label").querySelector("input");
+
+        preview.src = "";
+        preview.classList.add("hidden");
+        placeholder.classList.remove("hidden");
+        removeBtn.classList.add("hidden");
+        input.value = "";
+      }
+
+      // ========== FINALIZAR → HOME ==========
+      function finalizarCadastro() {
+        // Aqui você pode enviar os dados pro backend antes de redirecionar
+        const data = {
+          nome: document.getElementById("nome").value.trim(),
+          sobrenome: document.getElementById("sobrenome").value.trim(),
+          idade: selectedAge,
+          sexualidade: document.getElementById("sexualidade").value,
+          estado: document.getElementById("estado").value,
+          bio: document.getElementById("bio").value.trim(),
+          preferencia: document.getElementById("preferencia").value,
+          email: document.getElementById("email").value.trim(),
+          // senha: document.getElementById('senha').value  // nunca logar senha em produção
+        };
+
+        console.log("Cadastro finalizado:", data);
+
+        // Redireciona para a home
+        // Troque pelo caminho real da sua home (ex: 'home.html' ou '/home')
+        window.location.href = "home.html";
+      }
+
+      // Inicializa
+      createAgeItems();
+      updateProgress();
+    </script>
+  </body>
 </html>
