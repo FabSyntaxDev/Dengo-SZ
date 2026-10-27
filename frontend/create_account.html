@@ -402,7 +402,7 @@
               </div>
 
               <!-- Fotos 2-5 -->
-              <div class="relative aspect-square" id="slot-2">
+              <div class="relative aspect-square">
                 <label
                   class="absolute inset-0 bg-zinc-800 border-2 border-dashed border-zinc-600 hover:border-pink-500 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition overflow-hidden group"
                 >
@@ -750,7 +750,7 @@
           </div>
         </section>
 
-        <!-- PASSO 6: Tela final / Boas-vindas -->
+        <!-- PASSO 6: Tela final -->
         <section id="passo6" class="flex-1 flex flex-col hidden">
           <div
             class="flex-1 flex flex-col items-center justify-center text-center px-2"
@@ -832,6 +832,7 @@
 
           <button
             type="button"
+            id="btn-comecar"
             onclick="finalizarCadastro()"
             class="mt-6 w-full bg-gradient-to-r from-pink-500 to-green-500 hover:from-pink-400 hover:to-green-400 active:scale-[0.98] text-white font-semibold py-4 rounded-2xl text-base transition shadow-lg shadow-pink-500/25"
           >
@@ -845,6 +846,18 @@
       let currentStep = 1;
       let selectedAge = 20;
       const totalSteps = 6;
+
+      // Guarda as fotos em base64 (índice 1 a 5)
+      const fotosBase64 = {
+        1: null,
+        2: null,
+        3: null,
+        4: null,
+        5: null,
+      };
+
+      // API
+      const API_URL = "";
 
       // ========== SELETOR DE IDADE ==========
       const ageScroll = document.getElementById("age-scroll");
@@ -975,16 +988,7 @@
         }
 
         if (currentStep === 4) {
-          let fotosCount = 0;
-          for (let i = 1; i <= 5; i++) {
-            if (
-              !document
-                .getElementById(`preview-${i}`)
-                .classList.contains("hidden")
-            ) {
-              fotosCount++;
-            }
-          }
+          const fotosCount = Object.values(fotosBase64).filter(Boolean).length;
           if (fotosCount === 0) {
             alert("Adicione pelo menos uma foto");
             return false;
@@ -1026,11 +1030,14 @@
 
         const reader = new FileReader();
         reader.onload = (e) => {
+          const base64 = e.target.result;
+          fotosBase64[index] = base64;
+
           const preview = document.getElementById(`preview-${index}`);
           const placeholder = document.getElementById(`placeholder-${index}`);
           const removeBtn = document.getElementById(`remove-${index}`);
 
-          preview.src = e.target.result;
+          preview.src = base64;
           preview.classList.remove("hidden");
           placeholder.classList.add("hidden");
           removeBtn.classList.remove("hidden");
@@ -1039,6 +1046,8 @@
       }
 
       function removeImage(index) {
+        fotosBase64[index] = null;
+
         const preview = document.getElementById(`preview-${index}`);
         const placeholder = document.getElementById(`placeholder-${index}`);
         const removeBtn = document.getElementById(`remove-${index}`);
@@ -1051,10 +1060,16 @@
         input.value = "";
       }
 
-      // ========== FINALIZAR → HOME ==========
-      function finalizarCadastro() {
-        // Aqui você pode enviar os dados pro backend antes de redirecionar
-        const data = {
+      // ========== ENVIAR JSON E IR PARA HOME ==========
+      async function finalizarCadastro() {
+        const fotos = Object.values(fotosBase64).filter(Boolean);
+
+        if (fotos.length === 0) {
+          alert("Adicione pelo menos uma foto");
+          return;
+        }
+
+        const payload = {
           nome: document.getElementById("nome").value.trim(),
           sobrenome: document.getElementById("sobrenome").value.trim(),
           idade: selectedAge,
@@ -1063,14 +1078,42 @@
           bio: document.getElementById("bio").value.trim(),
           preferencia: document.getElementById("preferencia").value,
           email: document.getElementById("email").value.trim(),
-          // senha: document.getElementById('senha').value  // nunca logar senha em produção
+          senha: document.getElementById("senha").value,
+          fotos: fotos,
         };
 
-        console.log("Cadastro finalizado:", data);
+        const btn = document.getElementById("btn-comecar");
 
-        // Redireciona para a home
-        // Troque pelo caminho real da sua home (ex: 'home.html' ou '/home')
-        window.location.href = "home.html";
+        try {
+          btn.disabled = true;
+          btn.textContent = "Enviando...";
+
+          const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            const erro = await response.json().catch(() => ({}));
+            throw new Error(erro.message || "Erro ao criar conta");
+          }
+
+          const resultado = await response.json().catch(() => ({}));
+          console.log("Resposta do backend:", resultado);
+
+          // Sucesso → home
+          window.location.href = "home.html";
+        } catch (error) {
+          console.error(error);
+          alert(
+            error.message || "Não foi possível criar a conta. Tente novamente.",
+          );
+          btn.disabled = false;
+          btn.textContent = "Começar";
+        }
       }
 
       // Inicializa
